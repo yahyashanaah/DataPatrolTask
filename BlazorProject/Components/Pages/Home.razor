@@ -1,7 +1,42 @@
-﻿@page "/"
+﻿@* @page "/"
 
 <PageTitle>Home</PageTitle>
 
 <h1>Hello, world!</h1>
 
 Welcome to your new app.
+ *@
+
+ @page "/"
+@using MudBlazor
+@inject NavigationManager NavigationManager
+
+<PageTitle>Data Portal Task</PageTitle>
+
+<MudPaper Class="pa-6 mx-auto mt-8" Elevation="4" Style="max-width: 800px;">
+    <MudStack Spacing="3">
+        <MudText Typo="Typo.h3" Color="Color.Primary">Welcome to Data Portal Task System</MudText>
+        
+        <MudText Typo="Typo.body1">
+            This internal tool is developed for managing <b>User Requests</b>, <b>Policies</b>, <b>User Groups</b>, and <b>Users</b> efficiently within the Data Portal organization.
+        </MudText>
+
+        <MudDivider />
+
+        <MudText Typo="Typo.h6">Get Started:</MudText>
+        <MudStack Direction="Row" Spacing="2">
+            <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="@(() => NavigationManager.NavigateTo("/requests"))">
+                Manage Requests
+            </MudButton>
+            <MudButton Variant="Variant.Outlined" Color="Color.Secondary" OnClick="@(() => NavigationManager.NavigateTo("/policies"))">
+                View Policies
+            </MudButton>
+            <MudButton Variant="Variant.Outlined" Color="Color.Secondary" OnClick="@(() => NavigationManager.NavigateTo("/groups"))">
+                User Groups
+            </MudButton>
+            <MudButton Variant="Variant.Outlined" Color="Color.Secondary" OnClick="@(() => NavigationManager.NavigateTo("/users"))">
+                Users
+            </MudButton>
+        </MudStack>
+    </MudStack>
+</MudPaper>

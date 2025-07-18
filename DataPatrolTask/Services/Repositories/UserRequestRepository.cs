@@ -63,6 +63,8 @@ namespace DataPatrolTask.Services.Repositories
             await context.SaveChangesAsync();
             return result;
         }
+
+        // Get Requests By UserId
         public async Task<IEnumerable<UserRequest>> GetRequestsByUserIdAsync(string userId)
         {
             try

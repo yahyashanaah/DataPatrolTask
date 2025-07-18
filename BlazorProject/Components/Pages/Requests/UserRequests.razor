@@ -1,0 +1,94 @@
+﻿@page "/requests"
+@using DataPatrolTask.Models
+@using DataPatrolTask.Services.Interfaces
+@using MudBlazor
+@inject IUserRequestRepository RequestRepository
+@inject IUserInfoRepository UserRepository
+@inject ISnackbar Snackbar
+@inject IDialogService DialogService
+@inject NavigationManager NavigationManager
+
+<MudPaper Class="p-4">
+    <MudText Typo="Typo.h5">User Requests</MudText>
+
+    <MudButton Color="Color.Primary" Variant="Variant.Filled" OnClick="OpenCreateDialog">Create New Request</MudButton>
+
+    <MudTable Items="requests" Hover="true" Striped="true">
+        <HeaderContent>
+            <MudTh>Request ID</MudTh>
+            <MudTh>Requested By</MudTh>
+            <MudTh>Requested User</MudTh>
+            <MudTh>Status</MudTh>
+            <MudTh>Description</MudTh>
+            <MudTh>Code</MudTh>
+            <MudTh>Actions</MudTh>
+        </HeaderContent>
+        <RowTemplate>
+            <MudTd>@context.RequestId</MudTd>
+            <MudTd>@context.RequestedBy</MudTd>
+            <MudTd>@context.RequestedUserUserId</MudTd>
+            <MudTd>@context.Status</MudTd>
+            <MudTd>@context.Description</MudTd>
+            <MudTd>@context.RequestCode</MudTd>
+            <MudTd>
+                <MudIconButton Icon="@Icons.Material.Filled.Edit" Color="Color.Warning" OnClick="@(() => EditRequest(context))" />
+                <MudIconButton Icon="@Icons.Material.Filled.Delete" Color="Color.Error" OnClick="@(() => DeleteRequest(context.RequestId))" />
+            </MudTd>
+        </RowTemplate>
+    </MudTable>
+</MudPaper>
+
+@code {
+    private List<UserRequest> requests = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadData();
+    }
+
+    private async Task LoadData()
+    {
+        
+        requests = (await RequestRepository.GetAllAsync()).ToList();
+    }
+
+
+    private async Task EditRequest(UserRequest request)
+    {
+        var parameters = new DialogParameters { ["ExistingRequest"] = request };
+
+        var options = new DialogOptions { CloseButton = true, MaxWidth = MaxWidth.Medium, FullWidth = true };
+        var dialog = DialogService.Show<EditUserRequestDialog>("Edit Request", parameters, options);
+
+        var result = await dialog.Result;
+
+        if (!result.Canceled)
+        {
+            Snackbar.Add("Request updated successfully.", Severity.Success);
+            await LoadData();
+        }
+    }
+    
+
+    private async Task OpenCreateDialog()
+    {
+        var parameters = new DialogParameters { ["ExistingRequest"] = null };
+
+        var dialog = DialogService.Show<CreateUserRequestDialog>("Create Request");
+        var result = await dialog.Result;
+
+        if (!result.Canceled)
+        {
+            Snackbar.Add("Request created successfully!", Severity.Success);
+            await LoadData();
+        }
+    }
+
+    private async Task DeleteRequest(long id)
+    {
+        await RequestRepository.DeleteAsync(id);
+        Snackbar.Add("Request deleted.", Severity.Warning);
+        await LoadData();
+    }
+}
+

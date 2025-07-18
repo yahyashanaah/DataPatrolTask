@@ -1,0 +1,43 @@
+﻿@using DataPatrolTask.Models
+@using DataPatrolTask.Services.Interfaces
+@using MudBlazor
+
+<MudDialog>
+    <DialogContent>
+        <MudText Typo="Typo.h6">Create User Request</MudText>
+
+        <MudTextField Label="Requested By" @bind-Value="request.RequestedBy" Required="true" />
+        <MudTextField Label="Requested User ID" @bind-Value="request.RequestedUserUserId" Required="true" />
+        <MudTextField Label="Description" @bind-Value="request.Description" />
+
+        <MudSelect T="RequestStatus" Label="Status" @bind-Value="request.Status" Required="true">
+            <MudSelectItem Value="RequestStatus.Draft">Draft</MudSelectItem>
+            <MudSelectItem Value="RequestStatus.InReview">In Review</MudSelectItem>
+            <MudSelectItem Value="RequestStatus.Approved">Approved</MudSelectItem>
+            <MudSelectItem Value="RequestStatus.Rejected">Rejected</MudSelectItem>
+            <MudSelectItem Value="RequestStatus.Error">Error</MudSelectItem>
+        </MudSelect>
+    </DialogContent>
+
+    <DialogActions>
+        <MudButton OnClick="Save" Color="Color.Primary">Save</MudButton>
+        <MudButton OnClick="Cancel" Color="Color.Secondary">Cancel</MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    [CascadingParameter] IMudDialogInstance MudDialog { get; set; } = default!;
+    [Inject] IUserRequestRepository RequestRepository { get; set; } = default!;
+
+    private UserRequest request = new();
+
+    private async Task Save()
+    {
+        request.RequestCode = new Random().Next(10000000, 99999999);
+        request.RequestDateTime = DateTime.UtcNow;
+        await RequestRepository.CreateAsync(request);
+        MudDialog.Close(DialogResult.Ok(true));
+    }
+
+    private void Cancel() => MudDialog.Cancel();
+}

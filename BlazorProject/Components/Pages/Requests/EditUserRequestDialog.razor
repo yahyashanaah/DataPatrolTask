@@ -1,0 +1,63 @@
+﻿@using DataPatrolTask.Models
+@using DataPatrolTask.Services.Interfaces
+@using MudBlazor
+
+<MudDialog>
+    <DialogContent>
+        <MudTextField Label="Requested By" @bind-Value="request.RequestedBy" />
+        <MudTextField Label="Requested User ID" @bind-Value="request.RequestedUserUserId" />
+        <MudTextField Label="Description" @bind-Value="request.Description" />
+
+        <MudSelect T="RequestStatus" Label="Status" @bind-Value="request.Status">
+            <MudSelectItem Value="RequestStatus.Draft">Draft</MudSelectItem>
+            <MudSelectItem Value="RequestStatus.InReview">In Review</MudSelectItem>
+            <MudSelectItem Value="RequestStatus.Approved">Approved</MudSelectItem>
+            <MudSelectItem Value="RequestStatus.Rejected">Rejected</MudSelectItem>
+            <MudSelectItem Value="RequestStatus.Error">Error</MudSelectItem>
+        </MudSelect>
+    </DialogContent>
+
+    <DialogActions>
+        <MudButton OnClick="Save">Save</MudButton>
+        <MudButton OnClick="Cancel" Color="Color.Secondary">Cancel</MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    [CascadingParameter] IMudDialogInstance MudDialog { get; set; } = default!;
+    [Inject] IUserRequestRepository RequestRepository { get; set; } = default!;
+
+    [Parameter] public UserRequest? ExistingRequest { get; set; }
+
+    private UserRequest request = new();
+
+    protected override void OnInitialized()
+    {
+        if (ExistingRequest is not null)
+        {
+            // Clone the object to avoid editing the list directly
+            request = new UserRequest
+                {
+                    RequestId = ExistingRequest.RequestId,
+                    RequestedBy = ExistingRequest.RequestedBy,
+                    RequestedUserUserId = ExistingRequest.RequestedUserUserId,
+                    Description = ExistingRequest.Description,
+                    Status = ExistingRequest.Status,
+                    RequestCode = ExistingRequest.RequestCode,
+                    CompletionDateTime = ExistingRequest.CompletionDateTime,
+                };
+        }
+    }
+
+    private async Task Save()
+    {
+        if (request.RequestId > 0)
+            await RequestRepository.UpdateAsync(request.RequestId, request);
+        else
+            await RequestRepository.CreateAsync(request);
+
+        MudDialog.Close(DialogResult.Ok(true));
+    }
+
+    private void Cancel() => MudDialog.Cancel();
+}
