@@ -1,0 +1,80 @@
+﻿@page "/assign-policies/{PolicyId}"
+@using DataPatrolTask.Models
+@using DataPatrolTask.Services.Interfaces
+@inject IUserGroupRepository GroupRepository
+@inject IPolicyTableRepository PolicyRepository
+@inject NavigationManager NavigationManager
+
+<h3>Assign Groups to: @policy?.PolicyName</h3>
+
+@if (groups.Count == 0)
+{
+    <p>Loading...</p>
+}
+else
+{
+    <ul>
+        @foreach (var g in groups)
+        {
+            <li>
+                <input type="checkbox"
+                       id="@g.GroupId"
+                       @onchange="(e => OnCheckboxChanged(g.GroupId, ((ChangeEventArgs)e).Value))"
+                       checked="@selectedGroupIds.Contains(g.GroupId)" />
+                <label for="@g.GroupId">@g.Description</label>
+            </li>
+        }
+    </ul>
+
+    <button @onclick="SaveAssignment">Save</button>
+}
+
+@code {
+    [Parameter] public string PolicyId { get; set; }
+
+    private PolicyTable? policy;
+    private List<UserGroup> groups = new();
+    private HashSet<string> selectedGroupIds = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        Console.WriteLine($"Loading policy: {PolicyId}");
+
+        policy = await PolicyRepository.GetByIdAsync(PolicyId);
+
+        var allGroups = await GroupRepository.GetAllAsync();
+        groups = allGroups.ToList();
+
+        var assignedIds = await PolicyRepository.GetGroupIdsByPolicyIdAsync(PolicyId);
+        selectedGroupIds = assignedIds.ToHashSet();
+
+        Console.WriteLine($"Loaded {groups.Count} groups.");
+        Console.WriteLine($"Pre-selected {selectedGroupIds.Count} assigned group IDs:");
+        foreach (var id in selectedGroupIds)
+            Console.WriteLine($" - {id}");
+    }
+
+    private void OnCheckboxChanged(string groupId, object? value)
+    {
+        var isChecked = value?.ToString()?.ToLower() == "true";
+        Console.WriteLine($"Checkbox [{groupId}] changed: {isChecked}");
+
+        if (isChecked)
+            selectedGroupIds.Add(groupId);
+        else
+            selectedGroupIds.Remove(groupId);
+    }
+
+    private async Task SaveAssignment()
+    {
+        Console.WriteLine("Saving selected group IDs:");
+        foreach (var id in selectedGroupIds)
+        {
+            Console.WriteLine($" - {id}");
+        }
+
+        await PolicyRepository.AssignGroupsToPolicyAsync(PolicyId, selectedGroupIds.ToList());
+
+        NavigationManager.NavigateTo("/policies");
+    }
+}

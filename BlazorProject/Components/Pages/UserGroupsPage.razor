@@ -1,0 +1,73 @@
+﻿@page "/groups"
+@inject IUserGroupRepository GroupRepo
+@inject IDialogService DialogService
+@using DataPatrolTask.Services.Interfaces
+@using MudBlazor
+@using DataPatrolTask.Models
+@inject NavigationManager NavigationManager
+
+<MudPaper Class="p-4">
+    <MudText Typo="Typo.h5">User Groups</MudText>
+    <MudButton StartIcon="@Icons.Material.Filled.Add" Color="Color.Primary" OnClick="OpenCreateDialog">Create Group</MudButton>
+
+    <MudTable Items="_groups" Hover="true">
+        <HeaderContent>
+            <MudTh>ID</MudTh>
+            <MudTh>Name</MudTh>
+            <MudTh>Actions</MudTh>
+        </HeaderContent>
+        <RowTemplate>
+            <MudTd DataLabel="ID">@context.GroupId</MudTd>
+            <MudTd DataLabel="Name">@context.Description</MudTd>
+            <MudTd>
+                <MudButton Size="Size.Small" Color="Color.Primary" OnClick="() => OpenEditDialog(context)">Edit</MudButton>
+                <MudButton Size="Size.Small" Color="Color.Error" OnClick="() => DeleteGroup(context.GroupId)">Delete</MudButton>
+                <MudButton Size="Size.Small" OnClick="() => OpenAssignUsers(context)">Assign Users</MudButton>
+                <MudButton Size="Size.Small" OnClick="() => OpenAssignPolicies(context)">Assign Policies</MudButton> 
+            </MudTd>
+        </RowTemplate>
+    </MudTable>
+</MudPaper>
+
+@code {
+    private List<UserGroup> _groups = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        _groups = (await GroupRepo.GetAllAsync()).ToList();
+    }
+
+    private async Task OpenCreateDialog()
+    {
+        var dialog = DialogService.Show<CreateOrEditGroupDialog>("Create Group");
+        var result = await dialog.Result;
+
+        if (!result.Canceled) _groups = (await GroupRepo.GetAllAsync()).ToList();
+    }
+
+    private async Task OpenEditDialog(UserGroup group)
+    {
+        var parameters = new DialogParameters { ["GroupToEdit"] = group };
+        var dialog = DialogService.Show<CreateOrEditGroupDialog>("Edit Group", parameters);
+        var result = await dialog.Result;
+
+        if (!result.Canceled) _groups = (await GroupRepo.GetAllAsync()).ToList();
+    }
+
+    private async Task DeleteGroup(string groupId)
+    {
+        await GroupRepo.DeleteAsync(groupId);
+        _groups = (await GroupRepo.GetAllAsync()).ToList();
+    }
+
+
+    private void OpenAssignUsers(UserGroup group)
+    {
+        NavigationManager.NavigateTo($"/assign-users/{group.GroupId}");
+    }
+    private void OpenAssignPolicies(UserGroup group)
+    {
+        NavigationManager.NavigateTo($"/assign-policies-to-group/{group.GroupId}");
+    }
+
+}

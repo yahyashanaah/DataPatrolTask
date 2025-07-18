@@ -1,0 +1,80 @@
+﻿@page "/assign-users/{GroupId}"
+@inject IUserInfoRepository UserRepository
+@inject IUserGroupRepository GroupRepository
+@inject NavigationManager NavigationManager
+@using DataPatrolTask.Models
+@using DataPatrolTask.Services.Interfaces
+
+<h3>Assign Groups to: @group?.Description</h3>
+
+@if (users.Count == 0)
+{
+    <p>Loading...</p>
+}
+else
+{
+    <ul>
+        @foreach (var g in users)
+        {
+            <li>
+                <input type="checkbox"
+                       id="@g.UserId"
+                       @onchange="(e => OnCheckboxChanged(g.UserId, ((ChangeEventArgs)e).Value))"
+                       checked="@selectedUsersIds.Contains(g.UserId)" />
+                <label for="@g.UserId">@g.Username</label>
+            </li>
+        }
+    </ul>
+
+    <button @onclick="SaveAssignment">Save</button>
+}
+
+@code {
+    [Parameter] public string groupId { get; set; }
+
+    private UserGroup? group;
+    private List<UserInfo> users = new();
+    private HashSet<string> selectedUsersIds = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        Console.WriteLine($"Loading group: {groupId}");
+
+        group = await GroupRepository.GetByIdAsync(groupId);
+
+        var allUsers = await UserRepository.GetAllAsync();
+        users = allUsers.ToList();
+
+        var assignedIds = await GroupRepository.GetUserIdsByGroupId(groupId);
+        selectedUsersIds = assignedIds.ToHashSet();
+
+        Console.WriteLine($"Loaded {users.Count} users.");
+        Console.WriteLine($"Pre-selected {selectedUsersIds.Count} assigned user IDs:");
+        foreach (var id in selectedUsersIds)
+            Console.WriteLine($" - {id}");
+    }
+
+    private void OnCheckboxChanged(string userId, object? value)
+    {
+        var isChecked = value?.ToString()?.ToLower() == "true";
+        Console.WriteLine($"Checkbox [{userId}] changed: {isChecked}");
+
+        if (isChecked)
+            selectedUsersIds.Add(userId);
+        else
+            selectedUsersIds.Remove(userId);
+    }
+
+    private async Task SaveAssignment()
+    {
+        Console.WriteLine("Saving selected users IDs:");
+        foreach (var id in selectedUsersIds)
+        {
+            Console.WriteLine($" - {id}");
+        }
+
+        await GroupRepository.AssignUsersToGroup(groupId, selectedUsersIds.ToList());
+
+        NavigationManager.NavigateTo("/groups");
+    }
+}

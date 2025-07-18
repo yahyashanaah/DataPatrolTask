@@ -1,0 +1,28 @@
+﻿@using DataPatrolTask.Models
+@using DataPatrolTask.Services.Interfaces
+@using MudBlazor
+@inject IDialogService DialogService
+
+<MudDialog>
+    <DialogContent>
+        <MudTextField @bind-Value="Group.Description" Label="Group Description" Required="true" />
+    </DialogContent>
+
+    <DialogActions>
+        <MudButton Color="Color.Primary" OnClick="Save">Save</MudButton>
+        <MudButton OnClick="Cancel">Cancel</MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    [CascadingParameter] IMudDialogInstance MudDialog { get; set; } = default!;
+    [Parameter] public UserGroup Group { get; set; } = new();
+
+    private void Save()
+    {
+        if (!string.IsNullOrWhiteSpace(Group.Description))
+            MudDialog.Close(DialogResult.Ok(Group));
+    }
+
+    private void Cancel() => MudDialog.Cancel();
+}

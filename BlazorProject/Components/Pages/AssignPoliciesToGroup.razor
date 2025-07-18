@@ -1,0 +1,81 @@
+﻿@page "/assign-policies-to-group/{GroupId}"
+@inject IUserInfoRepository UserRepository
+@inject IUserGroupRepository GroupRepository
+@inject IPolicyTableRepository PolRepo
+@inject NavigationManager NavigationManager
+@using DataPatrolTask.Models
+@using DataPatrolTask.Services.Interfaces
+
+<h3>Assign Groups to: @group?.Description</h3>
+
+@if (policies.Count == 0)
+{
+    <p>Loading...</p>
+}
+else
+{
+    <ul>
+        @foreach (var g in policies)
+        {
+            <li>
+                <input type="checkbox"
+                       id="@g.PolicyId"
+                       @onchange="(e => OnCheckboxChanged(g.PolicyId, ((ChangeEventArgs)e).Value))"
+                       checked="@selectedPolIds.Contains(g.PolicyId)" />
+                <label for="@g.PolicyId">@g.PolicyName</label>
+            </li>
+        }
+    </ul>
+
+    <button @onclick="SaveAssignment">Save</button>
+}
+
+@code {
+    [Parameter] public string groupId { get; set; }
+
+    private UserGroup? group;
+    private List<PolicyTable> policies = new();
+    private HashSet<string> selectedPolIds = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        Console.WriteLine($"Loading group: {groupId}");
+
+        group = await GroupRepository.GetByIdAsync(groupId);
+
+        var allPol = await PolRepo.GetAllAsync();
+        policies = allPol.ToList();
+
+        var assignedIds = await GroupRepository.GetpolIdsByGroupId(groupId);
+        selectedPolIds = assignedIds.ToHashSet();
+
+        Console.WriteLine($"Loaded {policies.Count} users.");
+        Console.WriteLine($"Pre-selected {selectedPolIds.Count} assigned user IDs:");
+        foreach (var id in selectedPolIds)
+            Console.WriteLine($" - {id}");
+    }
+
+    private void OnCheckboxChanged(string polId, object? value)
+    {
+        var isChecked = value?.ToString()?.ToLower() == "true";
+        Console.WriteLine($"Checkbox [{polId}] changed: {isChecked}");
+
+        if (isChecked)
+            selectedPolIds.Add(polId);
+        else
+            selectedPolIds.Remove(polId);
+    }
+
+    private async Task SaveAssignment()
+    {
+        Console.WriteLine("Saving selected users IDs:");
+        foreach (var id in selectedPolIds)
+        {
+            Console.WriteLine($" - {id}");
+        }
+
+        await GroupRepository.AssignPolToGroup(groupId, selectedPolIds.ToList());
+
+        NavigationManager.NavigateTo("/groups");
+    }
+}

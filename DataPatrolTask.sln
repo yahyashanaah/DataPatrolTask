@@ -1,0 +1,61 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.10.35122.118
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DataPatrolTask", "DataPatrolTask\DataPatrolTask.csproj", "{8E0A7037-CB1F-4D59-8351-DA9FCFB091D1}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BlazorProject", "BlazorProject\BlazorProject.csproj", "{09516BA2-80E7-4FC9-AA1E-1AE8DB244680}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "APICoreProject", "APICoreProject\APICoreProject.csproj", "{D92C50F6-CA42-4B61-BADE-1BC105A451B2}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DataPatrolWorker", "DataPatrolWorker\DataPatrolWorker.csproj", "{AECB2936-388D-4891-965D-DA58284DA9A6}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DataPatrolDesktop", "DataPatrolDesktop\DataPatrolDesktop.csproj", "{E25EB5CE-43C0-45D7-A1C1-84E38A1D4813}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RandomNumberAPI", "RandomNumberAPI\RandomNumberAPI.csproj", "{5CE9C266-3C0A-4F01-B593-83441971C8D5}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ListenerWindowApp", "ListenerWindowApp\ListenerWindowApp.csproj", "{486AF2FD-785C-4B9E-8963-53FF720F6823}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{8E0A7037-CB1F-4D59-8351-DA9FCFB091D1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8E0A7037-CB1F-4D59-8351-DA9FCFB091D1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8E0A7037-CB1F-4D59-8351-DA9FCFB091D1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8E0A7037-CB1F-4D59-8351-DA9FCFB091D1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{09516BA2-80E7-4FC9-AA1E-1AE8DB244680}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{09516BA2-80E7-4FC9-AA1E-1AE8DB244680}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{09516BA2-80E7-4FC9-AA1E-1AE8DB244680}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{09516BA2-80E7-4FC9-AA1E-1AE8DB244680}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D92C50F6-CA42-4B61-BADE-1BC105A451B2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D92C50F6-CA42-4B61-BADE-1BC105A451B2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D92C50F6-CA42-4B61-BADE-1BC105A451B2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D92C50F6-CA42-4B61-BADE-1BC105A451B2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AECB2936-388D-4891-965D-DA58284DA9A6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AECB2936-388D-4891-965D-DA58284DA9A6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AECB2936-388D-4891-965D-DA58284DA9A6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AECB2936-388D-4891-965D-DA58284DA9A6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E25EB5CE-43C0-45D7-A1C1-84E38A1D4813}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E25EB5CE-43C0-45D7-A1C1-84E38A1D4813}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E25EB5CE-43C0-45D7-A1C1-84E38A1D4813}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E25EB5CE-43C0-45D7-A1C1-84E38A1D4813}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5CE9C266-3C0A-4F01-B593-83441971C8D5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5CE9C266-3C0A-4F01-B593-83441971C8D5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5CE9C266-3C0A-4F01-B593-83441971C8D5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5CE9C266-3C0A-4F01-B593-83441971C8D5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{486AF2FD-785C-4B9E-8963-53FF720F6823}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{486AF2FD-785C-4B9E-8963-53FF720F6823}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{486AF2FD-785C-4B9E-8963-53FF720F6823}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{486AF2FD-785C-4B9E-8963-53FF720F6823}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {620C5115-9CDB-47C9-98D4-E193335CF685}
+	EndGlobalSection
+EndGlobal

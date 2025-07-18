@@ -1,0 +1,38 @@
+﻿@using DataPatrolTask.Services.Interfaces
+@using MudBlazor
+@inject IUserGroupRepository GroupRepo
+@using DataPatrolTask.Models
+<MudDialog>
+    <DialogContent>
+        <MudText Typo="Typo.h6">@((GroupToEdit is null) ? "Create Group" : "Edit Group")</MudText>
+        <MudTextField @bind-Value="Group.Description" Label="Description" Required="true" />
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Save" Color="Color.Primary">Save</MudButton>
+        <MudButton OnClick="() => MudDialog.Cancel()">Cancel</MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    [CascadingParameter] IMudDialogInstance MudDialog { get; set; } = default!;
+    [Parameter] public UserGroup? GroupToEdit { get; set; }
+
+    private UserGroup Group = new();
+
+    protected override void OnInitialized()
+    {
+        Group = GroupToEdit != null
+            ? new UserGroup { GroupId = GroupToEdit.GroupId, Description = GroupToEdit.Description }
+            : new UserGroup();
+    }
+
+    private async Task Save()
+    {
+        if (GroupToEdit is null)
+            await GroupRepo.CreateAsync(Group);
+        else
+            await GroupRepo.UpdateAsync(Group.GroupId, Group);
+
+        MudDialog.Close(DialogResult.Ok(true));
+    }
+}

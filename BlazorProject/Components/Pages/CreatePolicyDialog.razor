@@ -1,0 +1,26 @@
+﻿@using DataPatrolTask.Models
+@using DataPatrolTask.Services.Interfaces
+@using MudBlazor
+<MudDialog>
+    <DialogContent>
+        <MudTextField Label="Policy Name" @bind-Value="policy.PolicyName" />
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Save">Save</MudButton>
+        <MudButton OnClick="Cancel" Color="Color.Secondary">Cancel</MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    [CascadingParameter] IMudDialogInstance MudDialog { get; set; } = default!;
+    [Inject] IPolicyTableRepository PolicyRepository { get; set; } = default!;
+    private PolicyTable policy = new();
+
+    private async Task Save()
+    {
+        await PolicyRepository.CreateAsync(policy);
+        MudDialog.Close(DialogResult.Ok(true));
+    }
+
+    private void Cancel() => MudDialog.Cancel();
+}

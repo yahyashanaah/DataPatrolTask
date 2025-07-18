@@ -1,0 +1,102 @@
+﻿@page "/policies"
+@using DataPatrolTask.Models
+@using DataPatrolTask.Services.Interfaces
+@using MudBlazor
+@inject IPolicyTableRepository PolicyRepository
+@inject IDialogService DialogService
+@inject ISnackbar Snackbar
+@inject NavigationManager NavigationManager
+
+<MudPaper Class="p-4">
+    <MudText Typo="Typo.h5">Policy List</MudText>
+    <MudButton Color="Color.Primary" Variant="Variant.Filled" OnClick="OpenCreateDialog">
+        <MudIcon Icon="@Icons.Material.Filled.Add" /> Add Policy
+    </MudButton>
+
+    <MudTable Items="_policies" Hover="true">
+        <HeaderContent>
+            <MudTh>Policy ID</MudTh>
+            <MudTh>Name</MudTh>
+            <MudTh>Actions</MudTh>
+        </HeaderContent>
+        <RowTemplate>
+            <MudTd DataLabel="ID">@context.PolicyId</MudTd>
+            <MudTd DataLabel="Name">@context.PolicyName</MudTd>
+            <MudTd>
+                <MudIconButton Icon="@Icons.Material.Filled.Edit" OnClick="() => OpenEditDialog(context)"/>
+                <MudIconButton Icon="@Icons.Material.Filled.Delete"
+                               Color="Color.Error"
+                               OnClick="@(() => InvokeAsync(() => DeletePolicy(context.PolicyId)))" />
+                <MudButton Size="Size.Small" Color="Color.Primary" OnClick="@(() => NavigateToAssignPolicies(context.PolicyId))">
+                    Assign Groups to Policy
+                </MudButton>
+            </MudTd>
+        </RowTemplate>
+    </MudTable>
+</MudPaper>
+
+@code {
+    private List<PolicyTable> _policies = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        _policies = (await PolicyRepository.GetAllAsync()).ToList();
+    }
+
+    private async Task DeletePolicy(string policyId)
+    {
+        bool? confirmed = await DialogService.ShowMessageBox(
+            "Confirm Delete",
+            "Are you sure you want to delete this policy?",
+            yesText: "Yes", cancelText: "Cancel");
+
+        if (confirmed == true)
+        {
+            try
+            {
+                var deleted = await PolicyRepository.DeleteAsync(policyId);
+                if (deleted != null)
+                {
+                    _policies = (await PolicyRepository.GetAllAsync()).ToList();
+                    Snackbar.Add("Policy deleted successfully", Severity.Success);
+                }
+                else
+                {
+                    Snackbar.Add("Policy not found", Severity.Warning);
+                }
+            }
+            catch (Exception ex)
+            {
+                Snackbar.Add($"Error deleting policy: {ex.Message}", Severity.Error);
+            }
+        }
+    }
+
+
+    private async void OpenCreateDialog()
+    {
+        var dialog = DialogService.Show<CreatePolicyDialog>("Create Policy");
+        var result = await dialog.Result;
+        if (!result.Canceled)
+        {
+            _policies = (await PolicyRepository.GetAllAsync()).ToList();
+            StateHasChanged();
+        }
+    }
+
+    private async Task OpenEditDialog(PolicyTable policy)
+    {
+        var parameters = new DialogParameters { ["Policy"] = policy };
+        var dialog = DialogService.Show<EditPolicyDialog>("Edit Policy", parameters);
+        var result = await dialog.Result;
+        if (!result.Canceled)
+            _policies = (await PolicyRepository.GetAllAsync()).ToList();
+    }
+
+    private void NavigateToAssignPolicies(string groupId)
+    {
+        NavigationManager.NavigateTo($"/assign-policies/{groupId}");
+    }
+
+
+}

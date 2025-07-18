@@ -1,0 +1,35 @@
+﻿@page "/user-requests/{UserId}"
+@using DataPatrolTask.Services.Interfaces
+@using DataPatrolTask.Models
+@inject IUserRequestRepository RequestRepository
+@using MudBlazor
+<MudPaper Class="p-4">
+    <MudText Typo="Typo.h5">Requests for User: @UserId</MudText>
+
+    <MudTable Items="@requests" Striped="true" Hover="true">
+        <HeaderContent>
+            <MudTh>Request Code</MudTh>
+            <MudTh>Description</MudTh>
+            <MudTh>Status</MudTh>
+            <MudTh>Date</MudTh>
+        </HeaderContent>
+        <RowTemplate>
+            <MudTd>@context.RequestCode</MudTd>
+            <MudTd>@context.Description</MudTd>
+            <MudTd>@context.Status</MudTd>
+            <MudTd>@context.RequestDateTime.ToString("g")</MudTd>
+        </RowTemplate>
+    </MudTable>
+</MudPaper>
+
+@code {
+    [Parameter] public string UserId { get; set; }
+
+    private List<UserRequest> requests = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        var result = await RequestRepository.GetRequestsByUserIdAsync(UserId.ToString());
+        requests = result.ToList();
+    }
+}

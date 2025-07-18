@@ -1,0 +1,28 @@
+﻿@using MudBlazor
+@inherits LayoutComponentBase
+<MudDialogProvider @rendermode="InteractiveServer" />
+<MudThemeProvider />
+<MudDialogProvider />
+
+<MudLayout>
+    <MudAppBar Color="Color.Primary" Elevation="4">
+        <MudText Typo="Typo.h6" Class="ml-2">User System</MudText>
+    </MudAppBar>
+
+    <MudDrawer DrawerClipMode="DrawerClipMode.Always" Open="true" Elevation="1" Width="260px">
+        <MudNavMenu>
+            <MudNavLink Href="" Icon="@Icons.Material.Filled.Home">Home</MudNavLink>
+            <MudNavLink Href="users" Icon="@Icons.Material.Filled.People">Users</MudNavLink>
+            <MudNavLink Href="groups" Icon="@Icons.Material.Filled.Group">User Groups</MudNavLink>
+            <MudNavLink Href="policies" Icon="@Icons.Material.Filled.Policy">Policies</MudNavLink>
+            <MudNavLink Href="requests" Icon="@Icons.Material.Filled.List">User Requests</MudNavLink>
+        </MudNavMenu>
+    </MudDrawer>
+
+    <MudMainContent>
+        <MudSnackbarProvider />
+        <MudContainer MaxWidth="MaxWidth.Large" Class="mt-4">
+            @Body
+        </MudContainer>
+    </MudMainContent>
+</MudLayout>

@@ -1,0 +1,68 @@
+﻿@* @inject IPolicyTableRepository PolicyRepo
+@using DataPatrolTask.Models
+@using DataPatrolTask.Services.Interfaces
+@using MudBlazor
+
+<MudDialog>
+    <DialogContent>
+        <MudText Typo="Typo.h6">Assign Policies to @Group.Description</MudText>
+
+        <MudList T="SelectablePolicy" Dense="true">
+            @if (AllPolicies?.Any() == true)
+            {
+                @foreach (var policy in AllPolicies)
+                {
+                    <MudListItem>
+                        <MudCheckBox @bind-Checked="policy.IsSelected" />
+                        <MudText>@policy.Name</MudText>
+                    </MudListItem>
+                }
+            }
+            else
+            {
+                <MudText>No policies available.</MudText>
+            }
+        </MudList>
+    </DialogContent>
+    <DialogActions>
+        <MudButton Color="Color.Primary" OnClick="Assign">Assign</MudButton>
+        <MudButton OnClick="() => MudDialog.Cancel()">Cancel</MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    [CascadingParameter] IMudDialogInstance MudDialog { get; set; } = default!;
+    [Parameter] public UserGroup Group { get; set; } = default!;
+
+    private List<SelectablePolicy> AllPolicies = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        var policies = await PolicyRepo.GetAllAsync();
+        AllPolicies = policies.Select(p => new SelectablePolicy
+            {
+                PolicyId = p.PolicyId,
+                Name = p.PolicyName,
+                IsSelected = false
+            }).ToList();
+    }
+
+    private async Task Assign()
+    {
+        var selectedIds = AllPolicies
+            .Where(p => p.IsSelected)
+            .Select(p => p.PolicyId)
+            .ToList();
+
+        await PolicyRepo.AssignToUserGroupsAsync(Group.GroupId, selectedIds);
+        MudDialog.Close(DialogResult.Ok(true));
+    }
+
+    private class SelectablePolicy
+    {
+        public string PolicyId { get; set; } = "";
+        public string Name { get; set; } = "";
+        public bool IsSelected { get; set; }
+    }
+}
+ *@

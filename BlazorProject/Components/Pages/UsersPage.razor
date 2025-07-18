@@ -1,0 +1,84 @@
+﻿@page "/users"
+@inject IUserInfoRepository UserRepository
+@inject IUserRequestRepository RequestRepository
+@using DataPatrolTask.Models
+@using DataPatrolTask.Services.Interfaces
+@using MudBlazor
+@inject NavigationManager NavigationManager
+@inject IDialogService DialogService
+@inject ISnackbar Snackbar
+
+<MudPaper Class="p-4">
+    <MudText Typo="Typo.h5">Users</MudText>
+
+    <MudTable Items="@users" Hover="true" Striped="true">
+        <HeaderContent>
+            <MudTh>User ID</MudTh>
+            <MudTh>Username</MudTh>
+            <MudTh>Is Enabled</MudTh>
+            <MudTh>Created</MudTh>
+            <MudTh>Actions</MudTh>
+        </HeaderContent>
+        <RowTemplate>
+            <MudTd>@context.UserId</MudTd>
+            <MudTd>@context.Username</MudTd>
+            <MudTd>
+            <MudChip T="string"
+                         Color="@(context.IsEnabled ? Color.Success : Color.Error)"
+                         Text="@(context.IsEnabled ? "Enabled" : "Disabled")" />
+            </MudTd>
+            <MudTd>@context.CreatedDateTime.ToString("g")</MudTd>
+            <MudTd>
+                <div style="display: flex; gap: 4px;">
+                    <MudButton Size="Size.Small" Variant="Variant.Filled" Color="Color.Warning" OnClick="@(() => DisableUser(context.UserId))">Disable</MudButton>
+                    <MudButton Size="Size.Small" Variant="Variant.Filled" Color="Color.Error" OnClick="@(() => DeleteUser(context.UserId))">Delete</MudButton>
+                    <MudButton Size="Size.Small" Variant="Variant.Outlined" OnClick="@(() => ShowRequests(context.UserId))">Requests</MudButton>
+                    <MudButton Size="Size.Small" Variant="Variant.Filled" Color="Color.Primary" OnClick="@(() => OpenAssignGroupsDialog(context))">
+                        Assign User Groups
+                    </MudButton>
+                </div>
+            </MudTd>
+        </RowTemplate>
+    </MudTable>
+</MudPaper>
+
+@code {
+    private List<UserInfo> users = new();
+    @inject NavigationManager NavigationManager
+    protected override async Task OnInitializedAsync()
+    {
+        users = (await UserRepository.GetAllAsync()).ToList();
+    }
+
+    private async Task DisableUser(string userId)
+    {
+        var user = await UserRepository.GetByIdAsync(userId);
+        if (user is not null && user.IsEnabled)
+        {
+            user.IsEnabled = false;
+            await UserRepository.UpdateAsync(userId,user);
+            users = (await UserRepository.GetAllAsync()).ToList();
+        }
+    }
+
+    private async Task DeleteUser(string userId)
+    {
+        await UserRepository.DeleteAsync(userId);
+        users = (await UserRepository.GetAllAsync()).ToList();
+    }
+
+    // private async Task ShowRequests(string userId)
+    // {
+    //     await RequestRepository.GetRequestsByUserIdAsync(userId);
+    // }
+
+    private void OpenAssignGroupsDialog(UserInfo user)
+    {
+        NavigationManager.NavigateTo($"/assign-groups/{user.UserId}");
+    }
+
+    private void ShowRequests(string userId)
+    {
+        NavigationManager.NavigateTo($"/user-requests/{userId}");
+    }
+}
