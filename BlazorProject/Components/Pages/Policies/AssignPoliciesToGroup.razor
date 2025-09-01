@@ -5,8 +5,9 @@
 @inject NavigationManager NavigationManager
 @using DataPatrolTask.Models
 @using DataPatrolTask.Services.Interfaces
+@using MudBlazor
 
-<h3>Assign Groups to: @group?.Description</h3>
+<h3>Assign Policies to: @group?.Description</h3>
 
 @if (policies.Count == 0)
 {
@@ -14,20 +15,28 @@
 }
 else
 {
-    <ul>
-        @foreach (var g in policies)
-        {
-            <li>
-                <input type="checkbox"
-                       id="@g.PolicyId"
-                       @onchange="(e => OnCheckboxChanged(g.PolicyId, ((ChangeEventArgs)e).Value))"
-                       checked="@selectedPolIds.Contains(g.PolicyId)" />
-                <label for="@g.PolicyId">@g.PolicyName</label>
-            </li>
-        }
-    </ul>
+    <MudPaper Class="p-4" Style="max-width: 500px; margin: auto;">
+        <MudText Typo="Typo.h6" Class="mb-3">Assign Policies</MudText>
 
-    <button @onclick="SaveAssignment">Save</button>
+        <MudList T="string">
+            @foreach (var p in policies)
+            {
+                <MudListItem T="string" Class="px-2 py-1" Style="border-bottom: 1px solid #e0e0e0;">
+                    <input type="checkbox"
+                           id="@p.PolicyId"
+                           @onchange="(e => OnCheckboxChanged(p.PolicyId, ((ChangeEventArgs)e).Value))"
+                           checked="@selectedPolIds.Contains(p.PolicyId)"
+                           style="margin-right: 10px;" />
+                    <label for="@p.PolicyId">@p.PolicyName</label>
+                </MudListItem>
+            }
+        </MudList>
+
+        <MudButton OnClick="SaveAssignment" Color="Color.Primary" Variant="Variant.Filled" Class="mt-4" FullWidth="true">
+            Save Assignment
+        </MudButton>
+    </MudPaper>
+
 }
 
 @code {

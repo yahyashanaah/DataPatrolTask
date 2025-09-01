@@ -4,6 +4,7 @@
 @inject NavigationManager NavigationManager
 @using DataPatrolTask.Models
 @using DataPatrolTask.Services.Interfaces
+@using MudBlazor
 
 <h3>Assign Groups to: @user?.Username</h3>
 
@@ -13,20 +14,28 @@
 }
 else
 {
-    <ul>
-        @foreach (var g in groups)
-        {
-            <li>
-                <input type="checkbox"
-                       id="@g.GroupId"
-                       @onchange="(e => OnCheckboxChanged(g.GroupId, ((ChangeEventArgs)e).Value))"
-                       checked="@selectedGroupIds.Contains(g.GroupId)" />
-                <label for="@g.GroupId">@g.Description</label>
-            </li>
-        }
-    </ul>
+    <MudPaper Class="p-4" Style="max-width: 500px; margin: auto;">
+        <MudText Typo="Typo.h6" Class="mb-3">Assign Groups to: <b>@user?.Username</b></MudText>
 
-    <button @onclick="SaveAssignment">Save</button>
+        <MudList T="string">
+            @foreach (var g in groups)
+            {
+                <MudListItem T="string" Class="px-2 py-1" Style="border-bottom: 1px solid #e0e0e0;">
+                    <input type="checkbox"
+                           id="@g.GroupId"
+                           @onchange="(e => OnCheckboxChanged(g.GroupId, ((ChangeEventArgs)e).Value))"
+                           checked="@selectedGroupIds.Contains(g.GroupId)" />
+                    <label for="@g.GroupId">@g.Description</label>
+                </MudListItem>
+            }
+        </MudList>
+
+        <MudButton OnClick="SaveAssignment" Color="Color.Primary" Variant="Variant.Filled" Class="mt-4" FullWidth="true">
+            Save Assignment
+        </MudButton>
+    </MudPaper>
+
+
 }
 
 @code {
